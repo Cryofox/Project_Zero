@@ -13,9 +13,18 @@ namespace AssemblyCSharp
 		public void Initialize(int size = 256)
 		{
 			terrainLayers = new TerrainLayer[2];
-			terrainLayers [1] = new OverGround (size);
+			//terrainLayers [1] = new OverGround (size);
 			terrainLayers [0] = new UnderGround (size);
 		}
+
+
+
+		public void DebugRender()
+		{
+			//terrainLayers [1].DebugRender ();
+			terrainLayers [0].DebugRender ();
+		}
+
 	}
 }
 

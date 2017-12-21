@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AssemblyCSharp
 {
 	public class UnderGround :TerrainLayer {
-		public UnderGround(int size):base(size,0)
+		public UnderGround(int size, int elevation=0):base(size,elevation)
 		{
 
 

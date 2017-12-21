@@ -16,11 +16,21 @@ namespace AssemblyCSharp
 					This is how water Volumes can grow and become a threat if not dealt with
 		*/
 		 
-
+		float centroidHeight=0;
 		public Cell ()
 		{
 		}
 
+
+		public void setHeight(float height)
+		{
+			this.centroidHeight = height;
+		}
+
+		public float getHeight()
+		{
+			return this.centroidHeight;
+		}
 
 
 
