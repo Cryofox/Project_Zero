@@ -10,6 +10,12 @@ public class SimplexNoiseGenerator {
     private float onesixth = 0.166666667f;
     private int[] T;
 	
+	public static int octaves = 2;
+	public static int multiplier = 25;
+	public static float amplitude = 5f;
+	public static float lacunarity = 2;
+	public static float persistence = 0.9f;
+
 	public SimplexNoiseGenerator() {
         if (T == null) {
             System.Random rand = new System.Random();
@@ -49,17 +55,23 @@ public class SimplexNoiseGenerator {
 		
 		return seed;
 	}
+	public float coherentNoise(float x, float y, float z)
+	{
+		return coherentNoise (x, y, z, octaves, multiplier, amplitude, lacunarity, persistence);
+	}
+
 	
-	public float coherentNoise(float x, float y, float z, int octaves=1, int multiplier = 25, float amplitude = 0.5f, float lacunarity = 2, float persistence = 0.9f) {
+	private float coherentNoise(float x, float y, float z, int octaves=1, int multiplier = 25, float amplitude = 0.5f, float lacunarity = 2, float persistence = 0.9f) {
 		Vector3 v3 = new Vector3(x,y,z)/multiplier;
 		float val = 0;
 		for (int n = 0; n < octaves; n++) {
-		  val += noise(v3.x,v3.y,v3.z) * amplitude;
-		  v3 *= lacunarity;
-		  amplitude *= persistence;
+			val += noise(v3.x,v3.y,v3.z) * amplitude;
+			v3 *= lacunarity;
+			amplitude *= persistence;
 		}
 		return val;
 	}
+	
 	
     public int getDensity(Vector3 loc) {
 		float val = coherentNoise(loc.x, loc.y, loc.z);

@@ -13,12 +13,12 @@ namespace AssemblyCSharp
 		int mapSize;
 
 
-		public TerrainLayer (int size, int planeElevation)
+		public TerrainLayer (int size, int planeElevation, string seed="1 2 3 4 5 6 7 8")
 		{
 			float blue= 0, cyan= 0, yellow= 0, green= 0, white = 0;
 
 			this.mapSize = size;
-			SimplexNoiseGenerator noiseGen = new SimplexNoiseGenerator ();
+			SimplexNoiseGenerator noiseGen = new SimplexNoiseGenerator (seed);
 
 			this.planeElevation = planeElevation;
 			float height;
@@ -30,13 +30,8 @@ namespace AssemblyCSharp
 					//Todo: Augment Cell Height
 					cells [x] [y] = new Cell ();
 
-					int octaves = 2;
-					int multiplier = 40;
-					float amplitude = 5f;
-					float lacunarity = 2;
-					float persistence = 0.9f;
-					height =  noiseGen.coherentNoise (x, planeElevation, y,octaves,multiplier,amplitude,lacunarity,persistence);
-					height *= 10;
+					height =  noiseGen.coherentNoise (x, planeElevation, y);
+					//height *= 10;
 
 					if (height < 2) {
 						blue++;
@@ -78,7 +73,7 @@ namespace AssemblyCSharp
 					a.x = c.x = worldCoordinates.x - halfCellSize;
 					b.x = d.x = worldCoordinates.x + halfCellSize;
 
-					a.z = b.z =  worldCoordinates.z + halfCellSize;
+					a.z = b.z =  worldCoordinates.z + halfCellSize; 
 					c.z = d.z =  worldCoordinates.z - halfCellSize;
 
 
@@ -86,7 +81,7 @@ namespace AssemblyCSharp
 
 					Color color = Color.white;
 					float cellHeight = cells [x] [y].getHeight ();
-					if (cellHeight < 2) {
+					/*if (cellHeight < 2) {
 						color = Color.blue;
 					} else if (cellHeight < 4) {
 						color = Color.cyan;
@@ -95,7 +90,9 @@ namespace AssemblyCSharp
 					} else if (cellHeight < 8) {
 						color = Color.green;
 					} else
-						color = Color.white;
+						color = Color.white;*/
+					color.r = color.b = color.g = cellHeight;
+					color.a = 1;
 
 
 

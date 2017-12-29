@@ -13,7 +13,7 @@ namespace AssemblyCSharp
 		}
 		public static void DrawLine(Vector3 a, Vector3 b, Color color)
 		{
-			Debug.DrawLine (a, b,color);
+			Debug.DrawLine (a, b,color,0);
 		}
 
 		public static void DrawCircle (Vector3 center, float radius, Color? color = null, float duration = 0, bool depthTest = false)
