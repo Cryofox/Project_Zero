@@ -123,6 +123,7 @@ namespace ProjectZero.Model.GameStateMachine
         		return;
         	}*/
             Debug.Log("EngineState:" + engineState);
+            Debug.Log("LoadingState:" + loadingState);
             //GameLoop
             switch (engineState)
         	{
@@ -185,6 +186,7 @@ namespace ProjectZero.Model.GameStateMachine
             loadingView.Hide();
             //Clear Garbage/Unused
             engineState = EngineState.Active;
+            loadingState = LoadingState.None;
         }
     }
 }
