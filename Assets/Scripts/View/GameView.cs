@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameView : IView
+public class GameView : View
 {
-	private GameObject panelGo;
-	public GameView(GameObject panel)
+	public GameView(GameObject panel):base(panel)
 	{
-		panelGo = panel;
 	}
 	
 	public void FadeIn(){}

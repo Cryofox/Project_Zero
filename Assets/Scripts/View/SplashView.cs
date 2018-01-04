@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SplashView : IView
+public class SplashView : View
 {
-	private GameObject panelGo;
-	public SplashView(GameObject panel)
+	public SplashView(GameObject panel):base(panel)
 	{
-		panelGo = panel;
+	
 	}
 	
 	public void FadeIn(){}

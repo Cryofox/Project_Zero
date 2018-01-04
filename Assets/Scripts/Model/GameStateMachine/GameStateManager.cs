@@ -16,6 +16,8 @@ namespace ProjectZero.Model.GameStateMachine
     {   
      	private GameState activeState;
     	private GameState requestedState;
+
+        private View activeView, requestedView;
     	enum EngineState
     	{
     		Active,
@@ -37,8 +39,9 @@ namespace ProjectZero.Model.GameStateMachine
         LoadingState loadingState = LoadingState.None;
 
 
-    	//Views
-    	private LoadingView  loadingView; 
+        //Views
+        private GameView gameView;
+        private LoadingView  loadingView; 
     	private SplashView   splashView; 
     	private MainMenuView mainView; 
     	private MapEditorView mapEditorView;     
@@ -60,17 +63,23 @@ namespace ProjectZero.Model.GameStateMachine
     	{
     		SetupViews();
     		SetupStates();
-    		LoadState(States.MainMenu);
-    		
-    	}
+            LoadState(States.MainMenu);
+        }
 
     	private void SetupViews()
     	{
-    		loadingView = new LoadingView(GameObject.Find("LoadingPanel"));
-    		mainView = new MainMenuView(GameObject.Find("MainMenuPanel"));
-    		splashView = new SplashView(GameObject.Find("SplashPanel"));
-    		mapEditorView = new MapEditorView(GameObject.Find("MapEditorPanel"));
-    	}
+    		loadingView = new LoadingView(GameObject.Find("Canvas/LoadingPanel"));
+    		mainView = new MainMenuView(GameObject.Find("Canvas/MainMenuPanel"));
+    		splashView = new SplashView(GameObject.Find("Canvas/SplashPanel"));
+    		mapEditorView = new MapEditorView(GameObject.Find("Canvas/MapEditorPanel"));
+            gameView = new GameView(GameObject.Find("Canvas/GamePanel"));
+            //Hide all views
+            loadingView.Hide();
+            mainView.Hide();
+            splashView.Hide();
+            mapEditorView.Hide();
+            gameView.Hide();
+        }
     	private void SetupStates()
     	{
     		mainMenuState = new MainMenuState();
@@ -86,12 +95,15 @@ namespace ProjectZero.Model.GameStateMachine
             {
                 case States.MainMenu:
                     requestedState = mainMenuState;
+                    requestedView = mainView;
                     break;
                 case States.LevelEditor:
                     requestedState = levelEditorState;
+                    requestedView = mapEditorView;
                     break;
                 case States.GamePlay:
                     requestedState = gamePlayState;
+                    requestedView = gameView;
                     break;
             }
 
@@ -99,44 +111,20 @@ namespace ProjectZero.Model.GameStateMachine
             loadingView.Show();
             //Start Async Unload -> GC Process
             UnloadOldAssets();
-
-            //Configure States (for updating)
-            //           engineState = EngineState.LoadingState;
-            //            loadingState = LoadingState.UnloadingOldAssets;
-
-            //Step 1A: Disable Control on activeGameState
-            //activeState.TogglePlayerControl(false);
-
-
-            // //Step 2: Set Text as Stage 1 / 3
-            // //Start Unload Process 
-
-            // //Step 3: Set Text as Stage 2 / 3
-            // //Start Load Process of requested State
-
-            // //Step 4: Set Text as Stage 3 / 3
-            // //Garbage Collect
-
-            // //Step 5: Make Level View Active
-
-            // //Step 6: FadeOut LoadScreen
-            // loadingView.FadeOut();
-            // //Step 6A: Enable Control on activeGameState
-            // activeState = requestedState;
-            // requestedState.TogglePlayerControl(true);
         }
     	
 
         public void Update(float timeDelta)
         {
+            /*
         	if(activeState==null)
         	{
         		Debug.Log("ActiveState = NULL");
         		return;
-        	}
-
-        	//GameLoop
-        	switch(engineState)
+        	}*/
+            Debug.Log("EngineState:" + engineState);
+            //GameLoop
+            switch (engineState)
         	{
         		case EngineState.Active:
         			activeState.Update(timeDelta);
@@ -163,12 +151,14 @@ namespace ProjectZero.Model.GameStateMachine
         // Load Routines
         private void UpdateLoadView(string text, float percent)
         {
-            Debug.Log(text + " " + percent);
+            loadingView.SetText(text);
+            loadingView.SetPercent(percent);
         }
         private async void UnloadOldAssets()
         {
+            engineState = EngineState.LoadingState;
             loadingState = LoadingState.UnloadingOldAssets;
-            if(activeState!=null)
+            if (activeState!=null)
                 await activeState.Unload();
             LoadNewAssets();
         }
@@ -181,11 +171,20 @@ namespace ProjectZero.Model.GameStateMachine
         private async void CollectGarbage()
         {
             loadingState = LoadingState.CollectingGarbage;
+            //Toggle Views
+            if(activeView!=null)
+                activeView.Hide();
+            requestedView.Show();
+
+            activeView = requestedView;
+            requestedView = null;
             //Cleanup States
             activeState = requestedState;
             requestedState = null;
-            //Clear Garbage/Unused
 
+            loadingView.Hide();
+            //Clear Garbage/Unused
+            engineState = EngineState.Active;
         }
     }
 }

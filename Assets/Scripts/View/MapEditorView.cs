@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapEditorView : IView
+public class MapEditorView : View
 {
     private GameObject panelGo;
-    public MapEditorView(GameObject panel)
+    public MapEditorView(GameObject panel) : base(panel)
     {
-        panelGo = panel;
+
     }
 
 }
