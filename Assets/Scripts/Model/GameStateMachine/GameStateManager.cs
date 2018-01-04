@@ -97,10 +97,12 @@ namespace ProjectZero.Model.GameStateMachine
 
             //Step 1: Toggle Loading Screen
             loadingView.Show();
+            //Start Async Unload -> GC Process
+            UnloadOldAssets();
 
             //Configure States (for updating)
-            engineState = EngineState.LoadingState;
-            loadingState = LoadingState.UnloadingOldAssets;
+            //           engineState = EngineState.LoadingState;
+            //            loadingState = LoadingState.UnloadingOldAssets;
 
             //Step 1A: Disable Control on activeGameState
             //activeState.TogglePlayerControl(false);
@@ -143,25 +145,47 @@ namespace ProjectZero.Model.GameStateMachine
         			switch(loadingState)
         			{
         				case LoadingState.UnloadingOldAssets:
+                            UpdateLoadView("Step: 1/3 Unloading Assets...", activeState.Percent);
         				break;
         				case LoadingState.LoadingNewAssets:
-        				break;
+                            UpdateLoadView("Step: 2/3 Loading Assets...", requestedState.Percent);
+                            break;
         				case LoadingState.CollectingGarbage:
-        				break;
+                            UpdateLoadView("Step: 3/3 Collecting Garbage...", 0);
+                            break;
         			}
                     break;
         	}
-        } 
-
-
-        private void UnloadingOldAssets()
-        {
-            if (activeState == null || activeState.Percent == 1f)
-            {
-               // await activeState.Unload();
-            }
         }
-        private void LoadingNewAssets(){}
-        private void CollectingGarbage(){}
+
+
+
+        // Load Routines
+        private void UpdateLoadView(string text, float percent)
+        {
+            Debug.Log(text + " " + percent);
+        }
+        private async void UnloadOldAssets()
+        {
+            loadingState = LoadingState.UnloadingOldAssets;
+            if(activeState!=null)
+                await activeState.Unload();
+            LoadNewAssets();
+        }
+        private async void LoadNewAssets()
+        {
+            loadingState = LoadingState.LoadingNewAssets;
+            await requestedState.Load();
+            CollectGarbage();
+        }
+        private async void CollectGarbage()
+        {
+            loadingState = LoadingState.CollectingGarbage;
+            //Cleanup States
+            activeState = requestedState;
+            requestedState = null;
+            //Clear Garbage/Unused
+
+        }
     }
 }
