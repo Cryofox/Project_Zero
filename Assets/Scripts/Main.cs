@@ -9,8 +9,8 @@ public class Main : MonoBehaviour {
 	void Awake(){
 		//Initialize the GameStateManager
 		gameStateManager = GameStateManager.Instance;
-		//Set the Default State
-		
+        //Set the Default State
+        gameStateManager.LoadState(States.LevelEditor);
 	}
 	// Use this for initialization
 	void Start () {}

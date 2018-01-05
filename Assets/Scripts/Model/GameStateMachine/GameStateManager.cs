@@ -63,7 +63,6 @@ namespace ProjectZero.Model.GameStateMachine
     	{
     		SetupViews();
     		SetupStates();
-            LoadState(States.MainMenu);
         }
 
     	private void SetupViews()
@@ -122,8 +121,8 @@ namespace ProjectZero.Model.GameStateMachine
         		Debug.Log("ActiveState = NULL");
         		return;
         	}*/
-            Debug.Log("EngineState:" + engineState);
-            Debug.Log("LoadingState:" + loadingState);
+//            Debug.Log("EngineState:" + engineState);
+//            Debug.Log("LoadingState:" + loadingState);
             //GameLoop
             switch (engineState)
         	{

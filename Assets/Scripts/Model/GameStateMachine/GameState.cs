@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 namespace ProjectZero.Model.GameStateMachine
 {
     class GameState
     {
-        float percent = 0;
+        protected float percent = 0;
 
-        
+
         //Unloads the Scene and returns Completion Percentage
-        public async Task Unload() {
+        virtual public async Task Unload() {
             percent = 0;
             Debug.Log("Unload Default...waiting");
             await TimeSpan.FromSeconds(2);
@@ -20,7 +17,7 @@ namespace ProjectZero.Model.GameStateMachine
             Debug.Log("Unload Complete!");
         }
         //Loads the Scene and returns Completion Percentage
-        public async Task Load() {
+        virtual public async Task Load() {
             percent = 0;
             Debug.Log("Load Default...waiting");
             
@@ -33,7 +30,7 @@ namespace ProjectZero.Model.GameStateMachine
 
         void TogglePlayerControl(bool enabled) { }
         public float Percent { get { return percent; } }
-        public void Update(float timeDelta) { }
+        public virtual void Update(float timeDelta) { }
     }
 
 }
