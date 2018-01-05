@@ -14,8 +14,9 @@ namespace ProjectZero.Model.GameStateMachine
             Debug.Log("Setting up terrain");
 
             //Step 1 - Increment 
-            terrain = new Terrain(2);
+            terrain = new Terrain(60);
             terrain.Init();
+            terrain.InitializeChunks(10);
             percent = 1;
             Debug.Log("Load Complete!");
         }
