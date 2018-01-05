@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ProjectZero.Assets.Scripts.Model.World
+namespace ProjectZero.Model.World
 {
     enum TileType {
         Grass,

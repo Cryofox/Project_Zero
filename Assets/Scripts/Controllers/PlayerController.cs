@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface PlayerController
 {
-
+    void Update(float timeDelta);
 }

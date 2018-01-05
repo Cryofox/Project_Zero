@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-namespace ProjectZero.Assets.Scripts.Model.World
+
+using ProjectZero.Model.Util;
+using ProjectZero.Model.Collision;
+
+namespace ProjectZero.Model.World
 {
     class Terrain
     {
@@ -12,13 +16,18 @@ namespace ProjectZero.Assets.Scripts.Model.World
 
        
 
+
         public Terrain(int size)
         {
             this.size = size;
+            Vector2 min = new Vector2(0, 0);
+            Vector2 max = new Vector2(size, size) * tileSize;
+            boundingRectangle = new BoundingRectangle(min, max);
         }
 
         public void Init()
         {
+            System.Random rnd = new System.Random();
             //Tiles Generated
             //tiles = new Tile[size][];
             points = new TilePoint[size + 1][];
@@ -28,6 +37,7 @@ namespace ProjectZero.Assets.Scripts.Model.World
                 for (int y = 0; y < size+1; y++)
                 {
                     points[x][y] = new TilePoint();
+                    points[x][y].height = (float)rnd.NextDouble()*2f;
                 }
             }
             
@@ -67,22 +77,22 @@ namespace ProjectZero.Assets.Scripts.Model.World
         {
             //Constrain Chunk into 1->Size Max
             chunkDivision = Math.Min(Math.Max(1, chunkDivision), size);
+            this.chunkDivision = chunkDivision;
             int tilesPerChunk = size / chunkDivision;
             chunks = new Chunk[chunkDivision][];
+            Chunk chunk;
             //Create Chunks
             for (int x = 0; x < chunkDivision; x++)
             {
                 chunks[x] = new Chunk[chunkDivision];
                 for (int y = 0; y < chunkDivision; y++)
                 {
-                    Chunk chunk = new Chunk(x * tilesPerChunk, y * tilesPerChunk, tilesPerChunk, ref points);
+                    //Points passed as Reference so Terrain manages Points and Chunks utilize.
+                    chunk = new Chunk(x * tilesPerChunk, y * tilesPerChunk, tilesPerChunk, ref points);
                     chunk.GenerateChunk();
-
                     chunks[x][y] = chunk;
                 }
             }
-            //Assign Tiles to Chunks
-
         }
 
 
@@ -143,10 +153,69 @@ namespace ProjectZero.Assets.Scripts.Model.World
             }
         }
 
+        public void RenderBoundingBoxes()
+        {
+            for (int x = 0; x < chunkDivision; x++)
+            {
+                for (int y = 0; y < chunkDivision; y++)
+                {
+                    chunks[x][y].boundingBox.Render(Color.blue);
+                }
+            }
 
+        }
 
+        public void ApplyHeight(Vector3 collisionPoint3D, float radius, float height)
+        {
+            float colPointX = collisionPoint3D.x;
+            float colPointY = collisionPoint3D.z;
 
+            Vector2 collisionPoint = new Vector2(colPointX, colPointY);
+            Vector2 samplePoint;
+            
+            //Modify all Points within Range
+            for (int x = Math.Max(0,(int)(colPointX - radius)); x < Math.Min(size+1,colPointX + radius); x++)
+            {
+                for (int y = Math.Max(0, (int)(colPointY - radius)); y < Math.Min(size + 1, colPointY + radius); y++)
+                {
+                    samplePoint.x = x;
+                    samplePoint.y = y;
+                    if (Vector2.Distance(samplePoint, collisionPoint) < radius)
+                    {
+                        points[x][y].height = height;
+                    }
+                }
+            }
 
+            //Regenerate Affected Chunks
+            for (int x = 0; x<chunkDivision;x++)
+            {
+                for (int y =0; y < chunkDivision; y++)
+                {
+                    //if (CollisionUtil.Collides(collisionPoint3D, radius, chunks[x][y]))
+                    //{
+                      //  chunks[x][y].GenerateChunk();//Recreate this Chunk
+                    //}
+                }
+            }
+        }
 
+        BoundingRectangle boundingRectangle;
+        public Vector3? CollisionPoint(Ray ray)
+        {
+            Vector3? collisionPoint= null;
+
+            for (int x = 0; x < chunkDivision; x++)
+            {
+                for (int y = 0; y < chunkDivision; y++)
+                {
+                    collisionPoint = CollisionUtil.CollisionPoint(ray, chunks[x][y].boundingBox);
+                    //Debug.Log("Chunk BB:" + chunks[x][y].boundingBox.min + " max:" + chunks[x][y].boundingBox.max); 
+                    if (collisionPoint != null)
+                        return collisionPoint;
+                }
+            }
+            return collisionPoint;
+        }
     }
 }
