@@ -37,7 +37,8 @@ namespace ProjectZero.Model.World
         List<Vector3> vertices;
         List<Vector2> uvs;
         Mesh mesh;
-        Material terrainMaterial;
+        //Static 
+       private static Material terrainMaterial;
 
         //Unity Specific
         GameObject prefab; //What's rendered in the Engine
@@ -85,6 +86,7 @@ namespace ProjectZero.Model.World
 
             mesh.vertices = vertices.ToArray();
             mesh.triangles = triangles.ToArray();
+            mesh.RecalculateNormals();
         }
 
 
@@ -92,9 +94,15 @@ namespace ProjectZero.Model.World
         {
             prefab = new GameObject();
             prefab.name = "Chunk["+startX+"]["+startY+"]";
+
+            if (terrainMaterial == null)
+            {
+                terrainMaterial = Resources.Load<Material>("Material/TerrainMat");
+            }
             //Unity Specific one time use.
             prefab.transform.parent = terrainTransform; 
             meshRenderer = prefab.AddComponent<MeshRenderer>();
+            meshRenderer.material = terrainMaterial;
             meshFilter = prefab.AddComponent<MeshFilter>();
             mesh = new Mesh();
 

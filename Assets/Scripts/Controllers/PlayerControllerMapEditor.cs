@@ -42,7 +42,7 @@ class PlayerControllerMapEditor : PlayerController
         {
             DebugUtil.DebugDrawCircle((Vector3)collisionPoint, radius);
             Debug.Log("CollisionPoint:" + collisionPoint);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
                 ApplyHeight(Stencil.Circle, (Vector3)collisionPoint);
             }

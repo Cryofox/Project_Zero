@@ -170,6 +170,11 @@ namespace ProjectZero.Model.World
             float colPointX = collisionPoint3D.x;
             float colPointY = collisionPoint3D.z;
 
+            //Convert to Local Grid coordinates
+            colPointX =(float)( (int)colPointX / tileSize);
+            colPointY =(float)( (int)colPointY / tileSize);
+            radius /= tileSize;
+
             Vector2 collisionPoint = new Vector2(colPointX, colPointY);
             Vector2 samplePoint;
             
@@ -180,21 +185,30 @@ namespace ProjectZero.Model.World
                 {
                     samplePoint.x = x;
                     samplePoint.y = y;
-                    if (Vector2.Distance(samplePoint, collisionPoint) < radius)
+                    if (Vector2.Distance(samplePoint, collisionPoint) <= radius)
                     {
                         points[x][y].height = height;
                     }
                 }
             }
+            //Chunks are
+            int tilesPerChunk = size / chunkDivision;
+
+            int startChunkIndexX = Math.Min(chunks.Length-1, Math.Max(0,((int)(colPointX - radius) / tilesPerChunk)-1));
+            int startChunkIndexY = Math.Min(chunks.Length-1, Math.Max(0,((int)(colPointY - radius) / tilesPerChunk)-1));
+
+            int endChunkIndexX = Math.Min(chunks.Length - 1, Math.Max(0, (int)(colPointX + radius) / tilesPerChunk));
+            int endChunkIndexY = Math.Min(chunks.Length - 1, Math.Max(0, (int)(colPointY + radius) / tilesPerChunk));
 
             //Regenerate Affected Chunks
-            for (int x = 0; x<chunkDivision;x++)
+            for (int x = startChunkIndexX; x< chunks.Length; x++)
             {
-                for (int y =0; y < chunkDivision; y++)
+                for (int y = startChunkIndexY; y < chunks.Length; y++)
                 {
+                    //if(CollisionUtil.Collides(collisionPoint,))
                     //if (CollisionUtil.Collides(collisionPoint3D, radius, chunks[x][y]))
                     //{
-                      //  chunks[x][y].GenerateChunk();//Recreate this Chunk
+                        chunks[x][y].GenerateChunk();//Recreate this Chunk
                     //}
                 }
             }
